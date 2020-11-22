@@ -59,6 +59,7 @@ class MyWidget(QMainWindow):
         self.prev.clicked.connect(self.prev_posts)
         self.add_pic.clicked.connect(self.add_picture)
         self.error_label.hide()
+        self.next_posts()
 
     def next_posts(self):
         if self.add:
@@ -147,6 +148,7 @@ class MyWidget(QMainWindow):
         self.hide()
 
     def add_picture(self):
+        self.hide()
         self.add_window = Add_Picture()
         self.add_window.show()
 
