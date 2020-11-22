@@ -6,15 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>765</width>
+    <height>629</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>765</width>
+    <height>629</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>765</width>
+    <height>629</height>
+   </size>
   </property>
   <property name="mouseTracking">
    <bool>true</bool>
   </property>
+  <property name="acceptDrops">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Вход</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label">
@@ -22,7 +37,7 @@
      <rect>
       <x>319</x>
       <y>25</y>
-      <width>161</width>
+      <width>231</width>
       <height>51</height>
      </rect>
     </property>
@@ -38,7 +53,7 @@
      <rect>
       <x>250</x>
       <y>100</y>
-      <width>91</width>
+      <width>311</width>
       <height>31</height>
      </rect>
     </property>
@@ -57,7 +72,7 @@
      <rect>
       <x>250</x>
       <y>240</y>
-      <width>91</width>
+      <width>301</width>
       <height>31</height>
      </rect>
     </property>
@@ -71,10 +86,10 @@
    <widget class="QLabel" name="error">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>200</x>
       <y>420</y>
-      <width>271</width>
-      <height>31</height>
+      <width>421</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -120,8 +135,15 @@
       <height>41</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="styleSheet">
-     <string notr="true">font: 12px &quot;Comfortaa&quot;;</string>
+     <string notr="true">font: 12px &quot;Comfortaa&quot;;
+background-color: rgb(3, 135, 201);
+color: rgb(255, 255, 255);
+border: 1px solid rgb(3, 135, 201);
+border-radius: 20px;</string>
     </property>
     <property name="text">
      <string>ПРОДОЛЖИТЬ</string>
@@ -130,17 +152,24 @@
    <widget class="QPushButton" name="reg_btn">
     <property name="geometry">
      <rect>
-      <x>442</x>
-      <y>471</y>
+      <x>440</x>
+      <y>480</y>
       <width>151</width>
-      <height>61</height>
+      <height>41</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="mouseTracking">
      <bool>false</bool>
     </property>
     <property name="styleSheet">
-     <string notr="true">font: 12px &quot;Comfortaa&quot;;</string>
+     <string notr="true">font: 12px &quot;Comfortaa&quot;;
+background-color: rgb(3, 135, 201);
+color: rgb(255, 255, 255);
+border: 1px solid rgb(3, 135, 201);
+border-radius: 20px;</string>
     </property>
     <property name="text">
      <string>Зарегистрироваться</string>
@@ -168,8 +197,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>24</height>
+     <width>765</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

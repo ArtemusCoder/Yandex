@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,6 +20,12 @@
    <string notr="true">
 font: 12pt &quot;Comfortaa&quot;;</string>
   </property>
+  <property name="documentMode">
+   <bool>false</bool>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="regist_btn">
     <property name="geometry">
@@ -31,7 +40,11 @@ font: 12pt &quot;Comfortaa&quot;;</string>
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">font: 12px &quot;Comfortaa&quot;;
+background-color: rgb(3, 135, 201);
+color: rgb(255, 255, 255);
+border: 1px solid rgb(3, 135, 201);
+border-radius: 20px;</string>
     </property>
     <property name="text">
      <string>Зарегистрироваться</string>
@@ -71,8 +84,8 @@ font: 12pt &quot;Comfortaa&quot;;</string>
      <rect>
       <x>275</x>
       <y>20</y>
-      <width>221</width>
-      <height>51</height>
+      <width>261</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="font">
@@ -223,6 +236,9 @@ font: 12pt &quot;Comfortaa&quot;;</string>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -253,7 +269,7 @@ font: 12pt &quot;Comfortaa&quot;;</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>32</height>
     </rect>
    </property>
   </widget>
