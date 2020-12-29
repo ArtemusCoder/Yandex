@@ -345,6 +345,7 @@ class Account(QMainWindow):
             cur = CON.cursor()
             cur.execute("DELETE FROM Users WHERE id = ?", (USERID,))
             cur.execute("DELETE FROM Messages WHERE user_id = ?", (USERID,))
+            cur.execute("DELETE FROM Images WHERE author_id = ?", (USERID,))
             CON.commit()
             self.close()
         else:
