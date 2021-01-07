@@ -22,10 +22,10 @@ else:
     THEME = 'BLACK'
 
 
-def to_binary(filename):
+def convertToBinaryData(filename):
     with open(filename, 'rb') as file:
-        data = file.read()
-    return data
+        blobData = file.read()
+    return blobData
 
 
 class MyWidget(QMainWindow):
@@ -35,7 +35,7 @@ class MyWidget(QMainWindow):
         self.like2 = False
         self.IMG1_ID = 0
         self.IMG2_ID = 0
-        self.skip = -2
+        self.between = 0
         self.COUNT1 = 0
         self.COUNT2 = 0
         self.add = True
@@ -69,13 +69,14 @@ class MyWidget(QMainWindow):
         self.like_btn1.hide()
         self.like_btn2.hide()
         self.lcdNumber_1.hide()
-        self.lcdNumber_2.hide()
         self.next_posts()
 
     def add_like(self):
         cur = CON.cursor()
         if self.sender() == self.like_btn1:
             if not self.like1:
+                cur.execute("""UPDATE Images SET likes = likes + 1 WHERE id_image = ?""",
+                            (self.IMG1_ID,))
                 cur.execute("""INSERT INTO Likes(image_id, user_id) VALUES (?, ?) """,
                             (self.IMG1_ID, USERID))
                 self.like1 = True
@@ -84,8 +85,9 @@ class MyWidget(QMainWindow):
                 self.like_btn1.setIconSize(QSize(35, 35))
                 self.COUNT1 += 1
                 self.lcdNumber_1.display(self.COUNT1)
-                self.lcdNumber_1.display(self.COUNT1)
             else:
+                cur.execute("""UPDATE Images SET likes = likes - 1 WHERE id_image = ?""",
+                            (self.IMG1_ID,))
                 cur.execute("""DELETE FROM Likes WHERE image_id = ? AND user_id = ?""",
                             (self.IMG1_ID, USERID))
                 self.like1 = False
@@ -96,6 +98,8 @@ class MyWidget(QMainWindow):
                 self.lcdNumber_1.display(self.COUNT1)
         else:
             if not self.like2:
+                cur.execute("""UPDATE Images SET likes = likes + 1 WHERE id_image = ?""",
+                            (self.IMG2_ID,))
                 cur.execute("""INSERT INTO Likes(image_id, user_id) VALUES (?, ?) """,
                             (self.IMG2_ID, USERID))
                 self.like2 = True
@@ -105,6 +109,8 @@ class MyWidget(QMainWindow):
                 self.COUNT2 += 1
                 self.lcdNumber_2.display(self.COUNT2)
             else:
+                cur.execute("""UPDATE Images SET likes = likes - 1 WHERE id_image = ?""",
+                            (self.IMG2_ID,))
                 cur.execute("""DELETE FROM Likes WHERE image_id = ? AND user_id = ?""",
                             (self.IMG2_ID, USERID))
                 self.like2 = False
@@ -116,24 +122,26 @@ class MyWidget(QMainWindow):
 
     def next_posts(self):
         if self.add:
-            self.skip += 2
+            if self.between == 0:
+                self.between += 1
+            else:
+                self.between += 2
             self.show_posts()
 
     def prev_posts(self):
-        if self.skip >= 2:
-            self.skip -= 2
+        if self.between >= 3:
+            self.between -= 2
             self.show_posts()
 
     def show_posts(self):
         cur = CON.cursor()
-        print(self.skip)
         res = cur.execute("""SELECT Images.image, Users.image, Images.text, 
-        Users.user, Images.id_image FROM Images  INNER JOIN Users ON 
-        Images.author_id = Users.id ORDER BY Images.id_image DESC LIMIT 2 OFFSET ?""",
-                          (self.skip, )).fetchall()
+        Users.user, Images.id_image, Images.likes FROM Images INNER JOIN Users ON 
+        Images.author_id = Users.id WHERE Images.id_image BETWEEN ? and ? ORDER BY Images.id_image DESC;""",
+                          (self.between, self.between + 1)).fetchall()
         step = 0
         if not bool(res):
-            self.skip -= 2
+            self.between -= 2
             self.add = False
             self.error_label.show()
         else:
@@ -156,9 +164,9 @@ class MyWidget(QMainWindow):
                 self.author_1.setIconSize(QSize(70, 70))
                 self.pic1.setPixmap(pixmap_main_image)
                 self.pic1.setScaledContents(True)
-                self.COUNT1 = len(cur.execute("""SELECT * FROM Likes WHERE image_id = ?""", (elem[4],)).fetchall())
-                self.lcdNumber_1.display(self.COUNT1)
-                like = bool(cur.execute("""SELECT * FROM Likes WHERE image_id = ? AND user_id = ?""",
+                self.lcdNumber_1.display(elem[5])
+                self.COUNT1 = int(elem[5])
+                like = bool(cur.execute("""SELECT * FROM LIKES WHERE image_id = ? AND user_id = ?""",
                                         (elem[4], USERID)).fetchone())
                 if like:
                     self.like_btn1.setIcon(QIcon("like_clicked.png"))
@@ -195,8 +203,8 @@ class MyWidget(QMainWindow):
                     self.author_1.setIconSize(QSize(70, 70))
                     self.pic1.setPixmap(pixmap_main_image)
                     self.pic1.setScaledContents(True)
-                    self.COUNT1 = len(cur.execute("""SELECT * FROM Likes WHERE image_id = ?""", (elem[4],)).fetchall())
-                    self.lcdNumber_1.display(self.COUNT1)
+                    self.lcdNumber_1.display(elem[5])
+                    self.COUNT1 = int(elem[5])
                     like = bool(
                         cur.execute("""SELECT * FROM LIKES WHERE image_id = ? AND user_id = ?""",
                                     (elem[4], USERID)).fetchone())
@@ -227,8 +235,8 @@ class MyWidget(QMainWindow):
                     self.author_2.setIconSize(QSize(70, 70))
                     self.pic2.setPixmap(pixmap_main_image)
                     self.pic2.setScaledContents(True)
-                    self.COUNT2 = len(cur.execute("""SELECT * FROM Likes WHERE image_id = ?""", (elem[4],)).fetchall())
-                    self.lcdNumber_2.display(self.COUNT2)
+                    self.lcdNumber_2.display(elem[5])
+                    self.COUNT2 = int(elem[5])
                     like = bool(
                         cur.execute("""SELECT * FROM LIKES WHERE image_id = ? AND user_id = ?""",
                                     (elem[4], USERID)).fetchone())
@@ -335,13 +343,8 @@ class Account(QMainWindow):
         retval = msg.exec_()
         if retval == QMessageBox.Yes:
             cur = CON.cursor()
-            cur.execute("DELETE FROM Users WHERE id = ?""", (USERID,))
-            cur.execute("""DELETE FROM Messages WHERE user_id = ?""", (USERID,))
-            images = cur.execute("""SELECT id_image FROM Images WHERE author_id = ?""", (USERID,)).fetchall()
-            cur.execute("""DELETE FROM Images WHERE author_id = ?""", (USERID,))
-            cur.execute("""DELETE FROM Chats WHERE user1_id = ? OR user2_id = ?""", (USERID, USERID))
-            for image in images:
-                cur.execute("""DELETE FROM Likes WHERE image_id = ?""", (image[0],))
+            cur.execute("DELETE FROM Users WHERE id = ?", (USERID,))
+            cur.execute("DELETE FROM Messages WHERE user_id = ?", (USERID,))
             CON.commit()
             self.close()
         else:
@@ -497,21 +500,13 @@ class Registration(QMainWindow):
             self.error.setText('Поля отмеченные * обязательны для заполнения!')
 
     def insertBLOB(self, login, password, email, image):
-        global USERID, USER_NAME
         sqliteConnection = sqlite3.connect('App.db')
         cursor = sqliteConnection.cursor()
         sqlite_insert_blob_query = """ INSERT INTO Users(user, password, email, image) VALUES (?, ?, ?, ?)"""
-        IMAGE = to_binary(image)
+        IMAGE = convertToBinaryData(image)
         data_tuple = (login, password, email, IMAGE)
         cursor.execute(sqlite_insert_blob_query, data_tuple)
         sqliteConnection.commit()
-        cur = CON.cursor()
-        USERID = cur.execute("""SELECT id FROM Users WHERE user = ?""", (USER_NAME,)).fetchone()[0]
-        users = cur.execute("""SELECT id FROM Users WHERE id != ?""", (USERID,)).fetchall()
-        for elem in users:
-            cur.execute("""INSERT INTO Chats(user1_id, user2_id) VALUES (?, ?)""", (USERID, elem[0]))
-            print(elem[0])
-        CON.commit()
         cursor.close()
 
     def home(self):
@@ -590,7 +585,7 @@ class Change(QMainWindow):
             else:
                 EMAIL = email
                 cur.execute("""UPDATE Users SET image = ? WHERE user = ?""",
-                            (to_binary(IMAGE), USER_NAME))
+                            (convertToBinaryData(IMAGE), USER_NAME))
                 user = USER_NAME
                 USER_NAME = login
                 cur.execute("""UPDATE Users SET user = ? WHERE user = ?""", (USER_NAME, user))
@@ -745,7 +740,7 @@ class Add_Picture(QMainWindow):
             sqliteConnection = sqlite3.connect('App.db')
             cursor = sqliteConnection.cursor()
             sqlite_insert_blob_query = """ INSERT INTO Images(author_id, image, text) VALUES (?, ?, ?)"""
-            image = to_binary(self.image)
+            image = convertToBinaryData(self.image)
             data_tuple = (USERID, image, self.commentedit.text())
             cursor.execute(sqlite_insert_blob_query, data_tuple)
             sqliteConnection.commit()
